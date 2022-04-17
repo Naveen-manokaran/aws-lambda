@@ -12,7 +12,9 @@ resource "aws_lambda_function" "test_lambda" {
     mode = "Active"
   }
   environment {
-    variables = var.variables
+    variables = {
+      main = "${aws_kms_ciphertext.main.ciphertext_blob}"
+    }
   }
   vpc_config {
     subnet_ids         = [aws_subnet.my-pri_subnet.id]
@@ -116,4 +118,10 @@ resource "aws_kms_key" "microservice" {
 resource "aws_kms_alias" "microservice_kms_alias" {
   name          = "alias/microservice"
   target_key_id = aws_kms_key.microservice.key_id
+}
+
+resource "aws_kms_ciphertext" "main" {
+  key_id = aws_kms_key.microservice.key_id
+
+  plaintext = "plaintext"
 }
