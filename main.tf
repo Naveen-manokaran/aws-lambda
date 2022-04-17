@@ -9,7 +9,7 @@ resource "aws_lambda_function" "test_lambda" {
   runtime = var.runtime
 
   tracing_config {
-    mode = var.mode
+    mode = "Active"
   }
   environment {
     variables = var.variables
