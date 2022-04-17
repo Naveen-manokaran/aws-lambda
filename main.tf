@@ -11,11 +11,11 @@ resource "aws_lambda_function" "test_lambda" {
   tracing_config {
     mode = "Active"
   }
-  environment {
+  /* environment {
     variables = {
       main = "${aws_kms_ciphertext.main.ciphertext_blob}"
     }
-  }
+  }*/
   vpc_config {
     subnet_ids         = [aws_subnet.my-pri_subnet.id]
     security_group_ids = [aws_security_group.ssh_from_office.id]
@@ -108,7 +108,7 @@ resource "aws_security_group" "ssh_from_office" {
     to_port     = 0
   }
 }
-
+/*
 resource "aws_kms_key" "microservice" {
   description         = "Key for legacy microservice secret encryption/decryption"
   is_enabled          = true
@@ -124,4 +124,4 @@ resource "aws_kms_ciphertext" "main" {
   key_id = aws_kms_key.microservice.key_id
 
   plaintext = "plaintext"
-}
+}*/
