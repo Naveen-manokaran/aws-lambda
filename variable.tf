@@ -39,6 +39,11 @@ variable "image_uri" {
   description = "(optional) describe your variable"
 }
 
+variable "mode" {
+  type        = string
+  description = "The mode"
+}
+
 /*
 
 #zip file = filename & source_code_hash

@@ -7,7 +7,9 @@ resource "aws_lambda_function" "test_lambda" {
   image_uri     = var.image_uri
   #source_code_hash = filebase64sha256("genie_api.zip")
   runtime = var.runtime
-
+  tracing_config {
+    mode = var.mode
+  }
   environment {
     variables = var.variables
   }
