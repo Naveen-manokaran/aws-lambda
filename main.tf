@@ -53,7 +53,12 @@ resource "aws_iam_policy" "iam_policy_for_lambda" {
      "Action": [
        "logs:CreateLogGroup",
        "logs:CreateLogStream",
-       "logs:PutLogEvents"
+       "logs:PutLogEvents",
+       "xray:PutTraceSegments",
+       "xray:PutTelemetryRecords",
+       "xray:GetSamplingRules",
+       "xray:GetSamplingTargets",
+       "xray:GetSamplingStatisticSummaries"
      ],
      "Resource": "arn:aws:logs:*:*:*",
      "Effect": "Allow"
@@ -71,7 +76,10 @@ resource "aws_iam_role_policy_attachment" "attach_iam_policy_to_iam_role" {
 resource "aws_vpc" "my-vpc" {
   cidr_block = "10.0.0.0/16"
 }
-
+resource "aws_flow_log" "test_flow_log" {
+  vpc_id = aws_vpc.my-vpc.id
+  # other required fields here
+}
 resource "aws_subnet" "my-pri_subnet" {
   vpc_id            = aws_vpc.my-vpc.id
   cidr_block        = "10.0.2.0/25"
@@ -99,8 +107,9 @@ resource "aws_security_group" "ssh_from_office" {
 }
 
 resource "aws_kms_key" "microservice" {
-  description = "Key for legacy microservice secret encryption/decryption"
-  is_enabled  = true
+  description         = "Key for legacy microservice secret encryption/decryption"
+  is_enabled          = true
+  enable_key_rotation = true
 }
 
 resource "aws_kms_alias" "microservice_kms_alias" {
