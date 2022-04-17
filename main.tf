@@ -7,12 +7,18 @@ resource "aws_lambda_function" "test_lambda" {
   image_uri     = var.image_uri
   #source_code_hash = filebase64sha256("genie_api.zip")
   runtime = var.runtime
+
   tracing_config {
     mode = var.mode
   }
   environment {
     variables = var.variables
   }
+  vpc_config {
+    subnet_ids         = [aws_subnet.my-pri_subnet.id]
+    security_group_ids = [aws_security_group.ssh_from_office.id]
+  }
+
 }
 
 resource "aws_iam_role" "iam_for_lambda" {
@@ -34,6 +40,74 @@ resource "aws_iam_role" "iam_for_lambda" {
 }
 EOF
 }
+resource "aws_iam_policy" "iam_policy_for_lambda" {
 
+  name        = "aws_iam_policy_for_terraform_aws_lambda_role"
+  path        = "/"
+  description = "AWS IAM Policy for managing aws lambda role"
+  policy      = <<EOF
+{
+ "Version": "2012-10-17",
+ "Statement": [
+   {
+     "Action": [
+       "logs:CreateLogGroup",
+       "logs:CreateLogStream",
+       "logs:PutLogEvents"
+     ],
+     "Resource": "arn:aws:logs:*:*:*",
+     "Effect": "Allow"
+   }
+ ]
+}
+EOF
+}
 
+resource "aws_iam_role_policy_attachment" "attach_iam_policy_to_iam_role" {
+  role       = aws_iam_role.iam_for_lambda.name
+  policy_arn = aws_iam_policy.iam_policy_for_lambda.arn
+}
 
+resource "aws_vpc" "my-vpc" {
+  cidr_block = "10.0.0.0/16"
+}
+
+resource "aws_subnet" "my-pri_subnet" {
+  vpc_id            = aws_vpc.my-vpc.id
+  cidr_block        = "10.0.2.0/25"
+  availability_zone = "us-east-2b"
+}
+
+resource "aws_security_group" "ssh_from_office" {
+  name        = "ssh_from_office"
+  description = "Allow ssh from office"
+  vpc_id      = aws_vpc.my-vpc.id
+
+  ingress {
+    protocol   = -1
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 0
+    to_port    = 0
+  }
+
+  egress {
+    protocol   = -1
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 0
+    to_port    = 0
+  }
+}
+
+resource "aws_kms_key" "microservice" {
+  description = "Key for legacy microservice secret encryption/decryption"
+  is_enabled  = true
+}
+
+resource "aws_kms_alias" "microservice_kms_alias" {
+  name          = "alias/microservice"
+  target_key_id = aws_kms_key.microservice.key_id
+}
