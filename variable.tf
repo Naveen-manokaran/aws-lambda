@@ -1,42 +1,42 @@
 variable "region" {
-    type = string
-    description = "(optional) describe your variable"
+  type        = string
+  description = "(optional) describe your variable"
 }
 
 variable "function_name" {
-    type = string
-    description = "A unique name for your Lambda Function."
+  type        = string
+  description = "A unique name for your Lambda Function."
 }
 
 variable "handler" {
-    type = string
-    description = "The function entrypoint in your code."
+  type        = string
+  description = "The function entrypoint in your code."
 }
 
 variable "runtime" {
-    type = string
-    description = "See Runtimes for valid values."
+  type        = string
+  description = "See Runtimes for valid values."
 }
 
 variable "variables" {
-    type = map(string)
-    description = "A map that defines environment variables for the Lambda function."
+  type        = map(string)
+  description = "A map that defines environment variables for the Lambda function."
 }
 
 variable "iam_role_name" {
-    type = string
-    description = "IAM role attached to the Lambda Function."
+  type        = string
+  description = "IAM role attached to the Lambda Function."
 }
 
 #ecr image
 variable "package_type" {
-    type = string
-    description = "(optional) describe your variable"
+  type        = string
+  description = "(optional) describe your variable"
 }
 
 variable "image_uri" {
-    type = string
-    description = "(optional) describe your variable"
+  type        = string
+  description = "(optional) describe your variable"
 }
 
 /*
