@@ -77,7 +77,8 @@ resource "aws_vpc" "my-vpc" {
   cidr_block = "10.0.0.0/16"
 }
 resource "aws_flow_log" "test_flow_log" {
-  vpc_id = aws_vpc.my-vpc.id
+  vpc_id       = aws_vpc.my-vpc.id
+  traffic_type = "ALL"
   # other required fields here
 }
 resource "aws_subnet" "my-pri_subnet" {
